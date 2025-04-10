@@ -4,25 +4,28 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Shuffler!</title>
-    <link rel="stylesheet" href="styles.css">
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
+        >
 </head>
 <body>
     <div class="container">
         <h1>Shuffler!</h1>
-        <p>Shuffle your list of items.</p>
+        <p>Shuffle your list of items:</p>
         <form id="shuffle-form">
             <textarea id="input-list" placeholder="Enter items, one per line"></textarea>
             <label for="randomizer">
-              using a random number between 0 and <span id="max-randomizer"></span>.
+              using a random number between 0 and <span id="max-randomizer"></span>:
               <input type="number" id="randomizer" min="0" value="0">
             </label>
             <label for="group-size">
-              in groups of
-              <input type="number" id="group-size" min="2" value="2" max="2">
+              in groups of:
+              <input disabled type="number" id="group-size" min="2" value="2" max="2">
             </label>
             <label for="rotation">
-              with rotation by
-              <select id="rotation">
+              with rotation by:
+              <select disabled id="rotation">
                 <option value="weeks">weeks</option>
               </select>
             </label>
