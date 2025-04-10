@@ -6,6 +6,7 @@ class App {
     this.randomizerInput = document.getElementById('randomizer');
     this.output = document.getElementById('output');
     this.maxRandomizerSpan = document.getElementById('max-randomizer');
+    this.rotationStartInput = document.getElementById('rotation-start');
   }
 
   constructor() {
@@ -37,7 +38,7 @@ class App {
   }
 
   bindEventListeners() {
-    const { form, randomizerInput, itemsInput } = this;
+    const { form, randomizerInput, itemsInput, rotationStartInput } = this;
 
     form.addEventListener('submit', (event) => {
       event.preventDefault(); // Prevent the form from submitting normally
@@ -60,10 +61,16 @@ class App {
       this.updateDOMRandomizerInput();
       this.updateDOMOutput();
     });
+
+    rotationStartInput.addEventListener('change', () => {
+      this.pushState();
+      this.updateStateFromURL();
+      this.updateDOMOutput();
+    });
   }
 
   pushState() {
-    const { itemsInput, randomizerInput, factorials } = this;
+    const { itemsInput, randomizerInput, factorials, rotationStartInput } = this;
     const newItems = itemsInput.value.split('\n').map(item => item.trim()).filter(item => item !== '');
     const rmax = factorials[newItems.length] - 1;
     const newRandomizer = Math.min(rmax, Number(randomizerInput.value));
@@ -73,6 +80,7 @@ class App {
       params.append('items', item);
     }
     params.append('randomizer', newRandomizer);
+    params.append('rotationStart', rotationStartInput.value);
     window.history.pushState({}, '', `?${params.toString()}`);
   }
 
@@ -81,12 +89,20 @@ class App {
     this.items = urlParams.getAll('items');
     this.updateRandomizerMax();
     this.randomizer = Math.min(this.randomizerMax, Number(urlParams.get('randomizer') || '0'));
+    const rotationStartString = urlParams.get('rotationStart');
+    if(rotationStartString === null) {
+      this.rotationStart = new Date();
+    } else {
+      this.rotationStart = parseISODateString(urlParams.get('rotationStart'));
+    }
   }
 
   updateDOMFromState() {
-    const { itemsInput, items } = this;
+    const { itemsInput, items, rotationStartInput } = this;
 
     itemsInput.value = items.join('\n');
+
+    rotationStartInput.value = formatISODateString(this.rotationStart);
 
     this.updateDOMRandomizerInput();
 
@@ -94,9 +110,9 @@ class App {
   }
 
   getIterationName(index) {
-    const now = new Date();
+    const { rotationStart } = this;
     // Assume weeks start on Sunday
-    const startOfNextWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() + (7 - now.getDay()));
+    const startOfNextWeek = new Date(rotationStart.getFullYear(), rotationStart.getMonth(), rotationStart.getDate() + (7 - rotationStart.getDay()));
     // Add 1 week * index
     const iterationDate = new Date(startOfNextWeek.getTime() + (index * 7 * 24 * 60 * 60 * 1000));
     return iterationDate.toLocaleDateString('en-US', {
@@ -146,3 +162,11 @@ setTimeout(() => {
 }, 100);
 
 
+function parseISODateString(dateString) {
+  const [year, month, day] = dateString.split('-').map(Number);
+  return new Date(year, month - 1, day);
+}
+
+function formatISODateString(date) {
+  return date.toISOString().split('T')[0]
+}
