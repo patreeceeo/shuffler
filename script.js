@@ -13,9 +13,7 @@ class App {
       this.factorials[i] = this.factorials[i - 1] * i;
     }
 
-    const urlParams = new URLSearchParams(window.location.search);
-    this.items = urlParams.getAll('items');
-    this.randomizer = Number(urlParams.get('randomizer') || '0');
+    this.updateStateFromURL();
   }
 
   /**
@@ -43,10 +41,14 @@ class App {
     form.addEventListener('submit', (event) => {
       event.preventDefault(); // Prevent the form from submitting normally
       this.pushState();
+      this.updateStateFromURL();
+      this.updateDOMOutput();
     });
 
     randomizerInput.addEventListener('change', () => {
       this.pushState();
+      this.updateStateFromURL();
+      this.updateDOMOutput();
     });
 
     itemsInput.addEventListener('input', () => {
@@ -65,29 +67,23 @@ class App {
       params.append('items', item);
     }
     params.append('randomizer', newRandomizer);
-    window.location.href = `?${params.toString()}`;
+    window.history.pushState({}, '', `?${params.toString()}`);
+  }
+
+  updateStateFromURL() {
+    const urlParams = new URLSearchParams(window.location.search);
+    this.items = urlParams.getAll('items');
+    this.randomizer = Number(urlParams.get('randomizer') || '0');
   }
 
   updateDOMFromState() {
-    const { itemsInput, output, items, randomizer } = this;
+    const { itemsInput, items } = this;
 
     itemsInput.value = items.join('\n');
 
     this.updateDOMRandomizerInput();
 
-    const permutation = this.integerToPermutation(randomizer, items);
-    // Output in groups of 2 with a header for each group indicating a rotation for the upcoming weeks
-    const outputHtml = permutation.reduce((html, item, index) => {
-      if (index % 2 === 0) {
-        html += `<h3>${this.getIterationName(index)}</h3><ul>`;
-      }
-      html += `<li>${item}</li>`;
-      if (index % 2 === 1 || index === permutation.length - 1) {
-        html += '</ul>';
-      }
-      return html;
-    }, '');
-    output.innerHTML = outputHtml;
+    this.updateDOMOutput();
   }
 
   getIterationName(index) {
@@ -109,6 +105,25 @@ class App {
     const max = factorials[items.length] - 1
     randomizerInput.setAttribute('max', max);
     randomizerInput.value = Math.min(randomizer, max);
+  }
+
+  /**
+    * Output in groups of 2 with a header for each group indicating a rotation for the upcoming weeks
+    */
+  updateDOMOutput() {
+    const { output, randomizer, items } = this;
+    const permutation = this.integerToPermutation(randomizer, items);
+    const outputHtml = permutation.reduce((html, item, index) => {
+      if (index % 2 === 0) {
+        html += `<h3>${this.getIterationName(index)}</h3><ul>`;
+      }
+      html += `<li>${item}</li>`;
+      if (index % 2 === 1 || index === permutation.length - 1) {
+        html += '</ul>';
+      }
+      return html;
+    }, '');
+    output.innerHTML = outputHtml;
   }
 }
 
