@@ -43,6 +43,7 @@ class App {
       event.preventDefault(); // Prevent the form from submitting normally
       this.pushState();
       this.updateStateFromURL();
+      this.updateDOMRandomizerInput();
       this.updateDOMOutput();
     });
 
@@ -55,6 +56,7 @@ class App {
 
     itemsInput.addEventListener('input', () => {
       this.items = itemsInput.value.split('\n').map(item => item.trim()).filter(item => item !== '');
+      this.updateRandomizerMax();
       this.updateDOMRandomizerInput();
     });
   }
@@ -76,7 +78,7 @@ class App {
   updateStateFromURL() {
     const urlParams = new URLSearchParams(window.location.search);
     this.items = urlParams.getAll('items');
-    this.randomizerMax = this.factorials[this.items.length] - 1
+    this.updateRandomizerMax();
     this.randomizer = Math.min(this.randomizerMax, Number(urlParams.get('randomizer') || '0'));
   }
 
@@ -102,6 +104,10 @@ class App {
       day: 'numeric',
       year: 'numeric'
     });
+  }
+
+  updateRandomizerMax() {
+    this.randomizerMax = this.factorials[this.items.length] - 1
   }
 
   updateDOMRandomizerInput() {
