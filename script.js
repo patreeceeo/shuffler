@@ -115,8 +115,7 @@ class App {
     const startOfNextWeek = new Date(rotationStart.getFullYear(), rotationStart.getMonth(), rotationStart.getDate() + (7 - rotationStart.getDay()));
     // Add 1 week * index
     const iterationDate = new Date(startOfNextWeek.getTime() + (index * 7 * 24 * 60 * 60 * 1000));
-    return iterationDate.toLocaleDateString('en-US', {
-      weekday: 'long',
+    return 'Week of ' + iterationDate.toLocaleDateString('en-US', {
       month: 'long',
       day: 'numeric',
       year: 'numeric'
