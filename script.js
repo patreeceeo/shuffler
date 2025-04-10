@@ -5,6 +5,7 @@ class App {
     this.itemsInput = document.getElementById('input-list');
     this.randomizerInput = document.getElementById('randomizer');
     this.output = document.getElementById('output');
+    this.maxRandomizerSpan = document.getElementById('max-randomizer');
   }
 
   constructor() {
@@ -101,10 +102,11 @@ class App {
   }
 
   updateDOMRandomizerInput() {
-    const { randomizerInput, factorials, items, randomizer } = this;
+    const { randomizerInput, factorials, items, randomizer, maxRandomizerSpan } = this;
     const max = factorials[items.length] - 1
     randomizerInput.setAttribute('max', max);
     randomizerInput.value = Math.min(randomizer, max);
+    maxRandomizerSpan.textContent = max;
   }
 
   /**
