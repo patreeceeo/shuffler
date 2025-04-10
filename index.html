@@ -15,24 +15,27 @@
         <p>Items to shuffle, one per line:</p>
         <form id="shuffle-form">
             <textarea id="input-list" style="height: 18rem;" placeholder="Enter items, one per line"></textarea>
-            <label for="randomizer">
-              using a random number between 0 and <span id="max-randomizer"></span>:
-              <input type="number" id="randomizer" min="0" value="0">
-            </label>
-            <label for="group-size">
-              in groups of:
-              <input disabled type="number" id="group-size" min="2" value="2" max="2">
-            </label>
-            <label for="rotation">
-              with one group per:
-              <select disabled id="rotation">
-                <option value="weeks">weeks</option>
-              </select>
-            </label>
-            <label for="rotation-start">
-              starting on:
-              <input type="date" id="rotation-start">
-            </label>
+            <details>
+              <summary>Options</summary>
+              <label for="randomizer">
+                using a random number between 0 and <span id="max-randomizer"></span>:
+                <input type="number" id="randomizer" min="0" value="0">
+              </label>
+              <label for="group-size">
+                in groups of:
+                <input disabled type="number" id="group-size" min="2" value="2" max="2">
+              </label>
+              <label for="rotation">
+                with one group per:
+                <select disabled id="rotation">
+                  <option value="weeks">weeks</option>
+                </select>
+              </label>
+              <label for="rotation-start">
+                starting on:
+                <input type="date" id="rotation-start">
+              </label>
+            </details>
         </form>
         <div id="output"></div>
     </div>
