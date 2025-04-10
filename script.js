@@ -58,6 +58,7 @@ class App {
       this.items = itemsInput.value.split('\n').map(item => item.trim()).filter(item => item !== '');
       this.updateRandomizerMax();
       this.updateDOMRandomizerInput();
+      this.updateDOMOutput();
     });
   }
 
