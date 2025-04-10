@@ -30,7 +30,7 @@ class App {
       const factorial = factorials[available.length - 1];
       const index = Math.floor(n / factorial);
       n %= factorial;
-      permutation.push(available[index]);
+      permutation.unshift(available[index]);
       available.splice(index, 1);
     }
     return permutation;
