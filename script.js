@@ -49,6 +49,7 @@ class App {
     randomizerInput.addEventListener('change', () => {
       this.pushState();
       this.updateStateFromURL();
+      this.updateDOMRandomizerInput();
       this.updateDOMOutput();
     });
 
@@ -59,9 +60,10 @@ class App {
   }
 
   pushState() {
-    const { itemsInput, randomizerInput } = this;
+    const { itemsInput, randomizerInput, factorials } = this;
     const newItems = itemsInput.value.split('\n').map(item => item.trim()).filter(item => item !== '');
-    const newRandomizer = Number(randomizerInput.value);
+    const rmax = factorials[newItems.length] - 1;
+    const newRandomizer = Math.min(rmax, Number(randomizerInput.value));
 
     const params = new URLSearchParams();
     for(const item of newItems) {
@@ -74,7 +76,8 @@ class App {
   updateStateFromURL() {
     const urlParams = new URLSearchParams(window.location.search);
     this.items = urlParams.getAll('items');
-    this.randomizer = Number(urlParams.get('randomizer') || '0');
+    this.randomizerMax = this.factorials[this.items.length] - 1
+    this.randomizer = Math.min(this.randomizerMax, Number(urlParams.get('randomizer') || '0'));
   }
 
   updateDOMFromState() {
@@ -102,11 +105,10 @@ class App {
   }
 
   updateDOMRandomizerInput() {
-    const { randomizerInput, factorials, items, randomizer, maxRandomizerSpan } = this;
-    const max = factorials[items.length] - 1
-    randomizerInput.setAttribute('max', max);
-    randomizerInput.value = Math.min(randomizer, max);
-    maxRandomizerSpan.textContent = max;
+    const { randomizerInput, randomizer, maxRandomizerSpan, randomizerMax } = this;
+    randomizerInput.setAttribute('max', randomizerMax);
+    randomizerInput.value = Math.min(randomizer, randomizerMax);
+    maxRandomizerSpan.textContent = randomizerMax;
   }
 
   /**
