@@ -1,0 +1,108 @@
+
+class App {
+  bindElements() {
+    this.form = document.getElementById('shuffle-form');
+    this.itemsInput = document.getElementById('input-list');
+    this.randomizerInput = document.getElementById('randomizer');
+    this.output = document.getElementById('output');
+  }
+
+  constructor() {
+    this.factorials = [1];
+    for (let i = 1; i <= 20; i++) {
+      this.factorials[i] = this.factorials[i - 1] * i;
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    this.items = urlParams.getAll('items');
+    this.randomizer = Number(urlParams.get('randomizer') || '0');
+  }
+
+  /**
+    * Given an integer n, finds the corresponding permutation of the list k
+    * @param {number} n - The permutation number, 0 >= n > len(k)!
+    * @param {any[]} k - The list to permute
+    */
+  integerToPermutation(n, k) {
+    const { factorials } = this;
+    const permutation = [];
+    const available = [...k];
+    while (available.length > 0) {
+      const factorial = factorials[available.length - 1];
+      const index = Math.floor(n / factorial);
+      n %= factorial;
+      permutation.push(available[index]);
+      available.splice(index, 1);
+    }
+    return permutation;
+  }
+
+  bindEventListeners() {
+    const { form, randomizerInput, itemsInput } = this;
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault(); // Prevent the form from submitting normally
+      this.pushState();
+    });
+
+    randomizerInput.addEventListener('change', () => {
+      this.pushState();
+    });
+
+    itemsInput.addEventListener('input', () => {
+      this.items = itemsInput.value.split('\n').map(item => item.trim()).filter(item => item !== '');
+      this.updateDOMRandomizerInput();
+    });
+  }
+
+  pushState() {
+    const { itemsInput, randomizerInput } = this;
+    const newItems = itemsInput.value.split('\n').map(item => item.trim()).filter(item => item !== '');
+    const newRandomizer = Number(randomizerInput.value);
+
+    const params = new URLSearchParams();
+    for(const item of newItems) {
+      params.append('items', item);
+    }
+    params.append('randomizer', newRandomizer);
+    window.location.href = `?${params.toString()}`;
+  }
+
+  updateDOMFromState() {
+    const { itemsInput, output, items, randomizer } = this;
+
+    itemsInput.value = items.join('\n');
+
+    this.updateDOMRandomizerInput();
+
+    const permutation = this.integerToPermutation(randomizer, items);
+    // Output in groups of 2
+    const outputHtml = permutation.reduce((html, item, index) => {
+      if (index % 2 === 0) {
+        html += '<ul>';
+      }
+      html += `<li>${item}</li>`;
+      if (index % 2 === 1 || index === permutation.length - 1) {
+        html += '</ul>';
+      }
+      return html;
+    }, '');
+    output.innerHTML = outputHtml;
+  }
+
+  updateDOMRandomizerInput() {
+    const { randomizerInput, factorials, items, randomizer } = this;
+    const max = factorials[items.length] - 1
+    randomizerInput.setAttribute('max', max);
+    randomizerInput.value = Math.min(randomizer, max);
+  }
+}
+
+const app = new App();
+setTimeout(() => {
+  app.bindElements();
+  app.bindEventListeners();
+  app.updateDOMFromState();
+}, 100);
+
+

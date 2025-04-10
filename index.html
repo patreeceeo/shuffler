@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Shuffler!</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Shuffler!</h1>
+        <p>Shuffle your list of items.</p>
+        <form id="shuffle-form">
+            <textarea id="input-list" placeholder="Enter items, one per line"></textarea>
+            <label for="randomizer">
+              using randomizer
+              <input type="number" id="randomizer" min="0" value="0">
+            </label>
+            <label for="group-size">
+              in groups of
+              <input type="number" id="group-size" min="2" value="2" max="2">
+            </label>
+            <button type="submit">Shuffle</button>
+        </form>
+        <div id="output"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
