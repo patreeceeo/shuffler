@@ -76,10 +76,10 @@ class App {
     this.updateDOMRandomizerInput();
 
     const permutation = this.integerToPermutation(randomizer, items);
-    // Output in groups of 2
+    // Output in groups of 2 with a header for each group indicating a rotation for the upcoming weeks
     const outputHtml = permutation.reduce((html, item, index) => {
       if (index % 2 === 0) {
-        html += '<ul>';
+        html += `<h3>${this.getIterationName(index)}</h3><ul>`;
       }
       html += `<li>${item}</li>`;
       if (index % 2 === 1 || index === permutation.length - 1) {
@@ -88,6 +88,20 @@ class App {
       return html;
     }, '');
     output.innerHTML = outputHtml;
+  }
+
+  getIterationName(index) {
+    const now = new Date();
+    // Assume weeks start on Sunday
+    const startOfNextWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() + (7 - now.getDay()));
+    // Add 1 week * index
+    const iterationDate = new Date(startOfNextWeek.getTime() + (index * 7 * 24 * 60 * 60 * 1000));
+    return iterationDate.toLocaleDateString('en-US', {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric'
+    });
   }
 
   updateDOMRandomizerInput() {
