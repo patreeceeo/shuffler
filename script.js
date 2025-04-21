@@ -1,5 +1,7 @@
 
 class App {
+
+  groupSize = 2;
   bindElements() {
     this.form = document.getElementById('shuffle-form');
     this.itemsInput = document.getElementById('input-list');
@@ -114,7 +116,7 @@ class App {
     // Assume weeks start on Sunday
     const startOfNextWeek = new Date(rotationStart.getFullYear(), rotationStart.getMonth(), rotationStart.getDate() + (7 - rotationStart.getDay()));
     // Add 1 week * index
-    const iterationDate = new Date(startOfNextWeek.getTime() + (index * 7 * 24 * 60 * 60 * 1000));
+    const iterationDate = addWeeks(startOfNextWeek, Math.floor(index));
     return 'Week of ' + iterationDate.toLocaleDateString('en-US', {
       month: 'long',
       day: 'numeric',
@@ -137,14 +139,14 @@ class App {
     * Output in groups of 2 with a header for each group indicating a rotation for the upcoming weeks
     */
   updateDOMOutput() {
-    const { output, randomizer, items } = this;
+    const { output, randomizer, items, groupSize } = this;
     const permutation = this.integerToPermutation(randomizer, items);
     const outputHtml = permutation.reduce((html, item, index) => {
-      if (index % 2 === 0) {
-        html += `<h3>${this.getIterationName(index)}</h3><ul>`;
+      if (index % groupSize === 0) {
+        html += `<h3>${this.getIterationName(index / groupSize)}</h3><ul>`;
       }
       html += `<li>${item}</li>`;
-      if (index % 2 === 1 || index === permutation.length - 1) {
+      if (index % groupSize === 1 || index === permutation.length - 1) {
         html += '</ul>';
       }
       return html;
@@ -160,6 +162,11 @@ setTimeout(() => {
   app.updateDOMFromState();
 }, 100);
 
+function addWeeks(date, weeks) {
+  const newDate = new Date(date);
+  newDate.setDate(newDate.getDate() + weeks * 7);
+  return newDate;
+}
 
 function parseISODateString(dateString) {
   const [year, month, day] = dateString.split('-').map(Number);
